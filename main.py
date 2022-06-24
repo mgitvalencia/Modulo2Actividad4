@@ -1,7 +1,7 @@
 import requests
 import json
-
 import argparse
+from respuesta import guarda_estado, guarda_datos, prepara_json
 
 
 parser = argparse.ArgumentParser(description="Invocación de servicios con recursos con representación JSON")
@@ -11,13 +11,11 @@ parser.add_argument("-i", "--resource_id", type=str, default="", required=False,
 
 
 """ Para hacer debugger
-
 parser = argparse.ArgumentParser(description="Invocación de servicios con recursos con representación JSON")
 parser.add_argument("-m", "--method", type=str, default="GET", choices=['GET', 'POST', 'PUT', 'DELETE'], required=False, help="Método que se usará para llamar al API")
 parser.add_argument("-r", "--resource", type=str, default="posts", choices=['post', 'comments'], required=False , help="Recurso sobre el que se realiza la operación")
 parser.add_argument("-i", "--resource_id", type=str, default="20", required=False, help=" Identificador único del recurso")
 """
-
 
 args = parser.parse_args()
 
@@ -30,38 +28,36 @@ with open('config.json') as file:
     data = json.load(file)
 file.close()
 
-print(data)
-
 url = data["url"]
 time_out = data["request_time_out"]
 res_data = data["response_data"]
 res_status = data["response_status"]
 
-
 print(url)
 print(time_out)
 print(res_data)
 print(res_status)
-
 print(url + args.resource)
 
 if (args.method == "GET"):
     if(args.resource_id != ""):
-       response = requests.get(url + args.resource + "/" + args.resource_id) 
+       path = url + args.resource + "/" + args.resource_id
     else:    
-       response = requests.get(url + args.resource)
+       path = url + args.resource
 
-    print(response)
 
-    with open(res_data, 'w') as file:
-       json.dump(json.loads(response.text), file, indent=4)
-    file.close
+    headers = {'Content-type': ''}
+    response = requests.get(path, verify=False, headers=headers)
+    guarda_datos(res_data, response)
+    json_data = prepara_json(args.method, path, response)
+    guarda_estado(res_status, json_data)
 
-    with open(res_status, 'w') as file:
-       file.write(str(response))
-    file.close
+    print(response.headers['Content-Type'])
 
-print(response.text)
+   
+
+
+
 
 
 
