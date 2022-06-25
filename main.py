@@ -3,26 +3,17 @@ import json
 import argparse
 from respuesta import guarda_estado, guarda_datos, prepara_json
 
-
 parser = argparse.ArgumentParser(description="Invocación de servicios con recursos con representación JSON")
 parser.add_argument("-m", "--method", type=str, choices=['GET', 'POST', 'PUT', 'DELETE'], required=True, help="Método que se usará para llamar al API")
 parser.add_argument("-r", "--resource", type=str, choices=['posts', 'comments'], required=True , help="Recurso sobre el que se realiza la operación")
 parser.add_argument("-i", "--resource_id", type=str, default="", required=False, help=" Identificador único del recurso")
 
-
-""" Para hacer debugger
-parser = argparse.ArgumentParser(description="Invocación de servicios con recursos con representación JSON")
-parser.add_argument("-m", "--method", type=str, default="GET", choices=['GET', 'POST', 'PUT', 'DELETE'], required=False, help="Método que se usará para llamar al API")
-parser.add_argument("-r", "--resource", type=str, default="posts", choices=['post', 'comments'], required=False , help="Recurso sobre el que se realiza la operación")
-parser.add_argument("-i", "--resource_id", type=str, default="20", required=False, help=" Identificador único del recurso")
-"""
 args = parser.parse_args()
 
 if (args.method == "DELETE" or args.method == "PUT"):
     if (args.resource_id == ""):
         print("Para los metodos DELETE y PUT se requiere el argumento --resource")
         exit(0)
-        
 
 with open('config.json') as file:
     data = json.load(file)
